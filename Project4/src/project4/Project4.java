@@ -13,11 +13,11 @@ private static int xsize=700,ysize=500;// set window to this size
 
 // Private state variables.
 
-private JPanel northPanel,centerPanel;
+private JPanel northPanel,centerPanel,southPanel;
 private JButton pushButton,popButton,dumpButton,exitButton;
 private JTextField colorField;
 private JTextField codeField;
-private JTextArea outputArea, roomInfo;
+private JTextArea outputArea,roomArea;
 private Room currentRoom;
 private Stack roomStack;
 
@@ -53,7 +53,7 @@ public Project4 ()
 public void setRoom(String k){
        currentRoom = new Room(k);
        currentRoom.setMessage();
-       outputArea.setText(currentRoom.getMessage());
+       roomArea.setText(currentRoom.getMessage());
 }
 
 public boolean isRoomOption(String s){
@@ -94,9 +94,15 @@ public void addScreenComponents()  {
        getContentPane().add("North",northPanel);
 
        centerPanel = new JPanel();
-       outputArea = new JTextArea("Who Dares Enter.... The Temple of Gloom!",20,60);
+       outputArea = new JTextArea("",20,60);
+       outputArea.setText("Who dares enter... The Temple of Gloom!");
        centerPanel.add(outputArea);
        getContentPane().add(centerPanel,"Center");
+       
+       southPanel = new JPanel();
+       roomArea = new JTextArea("",20,60);
+       southPanel.add(roomArea);
+       getContentPane().add(southPanel, "South");
 
 }
 ////////////BUTTON CLICKS ///////////////////////////
@@ -108,13 +114,36 @@ public void actionPerformed(ActionEvent e) {
          }
 
          if (e.getSource()== popButton) {
+                //inputs
                 String newcolor = colorField.getText();
+                newcolor = newcolor.toUpperCase();
                 outputArea.setText("Pop returning to " + newcolor);
+                int newcode = Integer.parseInt(codeField.getText());
+                
+                //room variable - top of stack to compare to inputs
+                Room topRoom = roomStack.peek();
+                String roomColor = topRoom.getRoomColor();
+                int roomCode = topRoom.getCode();
+                
+                if(newcolor.equals(roomColor) && newcode == roomCode){
+                    roomStack.pop();
+                    setRoom(roomColor);
+                    
+                    if(roomStack.empty() == true){
+//                        winGame();
+                          System.out.println("You won!");
+                    }
+                } else{
+//                    loseGame();
+                      System.out.println("You lose!");
+                }
+                
                 // add code to pop color off the stack, check that the color/code matches and change to that color room
          }
 
          if (e.getSource()== pushButton) {
                 String newcolor = colorField.getText();
+                outputArea.setText("Push entering " + newcolor);
                 if(isRoomOption(newcolor) == true){
                     currentRoom.setCode(Integer.parseInt(codeField.getText()));
                     roomStack.push(currentRoom);

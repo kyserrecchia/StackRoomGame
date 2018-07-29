@@ -63,6 +63,10 @@ public class Room {
         }    
     }
     
+    public String getRoomColor(){
+        return roomColor;
+    }
+    
     public void setMessage(){
         message = "You are in the " + roomColor + " room!" + "\nYou see doors to these other room(s): " + roomOptions + ".";
     }
