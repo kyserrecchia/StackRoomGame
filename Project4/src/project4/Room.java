@@ -68,7 +68,15 @@ public class Room {
     }
     
     public void setMessage(){
-        message = "You are in the " + roomColor + " room!" + "\nYou see doors to these other room(s): " + roomOptions + ".";
+        if(!"GOLD".equals(roomColor)){
+            message = "\nYou are in the " + roomColor + " room!" + "\nYou see doors to these other room(s): " + roomOptions + ".";
+        } else{
+            message = "\nYou are in the " + roomColor + " room!" + "\nYou have finally arrived! "
+                    + "\nYou see the golden chalice and hastily pick it up!"
+                    + "\nBehind you lies the yellow door."
+                    + "\nI hope you remember your codes!";
+        }
+       
     }
     
     public String getMessage(){

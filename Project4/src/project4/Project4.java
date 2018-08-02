@@ -15,8 +15,7 @@ private static int xsize=700,ysize=500;// set window to this size
 
 private JPanel northPanel,centerPanel,southPanel;
 private JButton pushButton,popButton,dumpButton,exitButton;
-private JTextField colorField;
-private JTextField codeField;
+private JTextField colorField, codeField;
 private JTextArea outputArea,roomArea;
 private Room currentRoom;
 private Stack roomStack;
@@ -31,23 +30,27 @@ public static void main(String[] args) {
 
 public Project4 ()
 {
-       addScreenComponents();   // put the stuff on the screen
-
-       // Exit when the window is closed. i.e. when top right X box pressed
+       
+    addScreenComponents();
+    roomStack = new Stack(100);
+    setRoom("green");
+    
+    setSize(xsize,ysize);
+    setLocation(xpos,ypos);
+    setVisible(true);
+    
+    clearTextFields();
        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e) {
-                System.exit(0);
-            }
-        });
-       
-       roomStack = new Stack(100);
-       
-       setRoom("green");
-       
-       setSize(xsize,ysize);
-       setLocation(xpos,ypos);
-       setVisible(true);
+        public void windowClosing(WindowEvent e) {
+            System.exit(0);
+        }
+    });// put the stuff on the screen
+     
+}
 
+public void startGame(){
+    dispose();
+    Project4 tpo = new Project4();
 }
 
 public void setRoom(String k){
@@ -67,6 +70,11 @@ public boolean isRoomOption(String s){
         }
     }
     return isOption;
+}
+
+public void clearTextFields(){
+    colorField.setText(null);
+    codeField.setText(null);
 }
 
 public void addScreenComponents()  {
@@ -95,7 +103,12 @@ public void addScreenComponents()  {
 
        centerPanel = new JPanel();
        outputArea = new JTextArea("",20,60);
-       outputArea.setText("Who dares enter... The Temple of Gloom!");
+       outputArea.setText("Who dares enter... The Temple of Gloom!"
+               + "\n\nYour mission: Enter the color of a door you see and any code you wish,"
+               + "\nseeking the golden chalice in the golden room."
+               + "\n\nThen come back exactly the way you came,"
+               + " entering the same codes in reverse,"
+               + "\nand keep the golden chalice... or fail and perish!");
        centerPanel.add(outputArea);
        getContentPane().add(centerPanel,"Center");
        
@@ -115,39 +128,49 @@ public void actionPerformed(ActionEvent e) {
 
          if (e.getSource()== popButton) {
                 //inputs
-                String newcolor = colorField.getText();
-                newcolor = newcolor.toUpperCase();
-                outputArea.setText("Pop returning to " + newcolor);
-                int newcode = Integer.parseInt(codeField.getText());
+                String newcolor = colorField.getText().toUpperCase();
                 
-                //room variable - top of stack to compare to inputs
-                Room topRoom = roomStack.peek();
-                String roomColor = topRoom.getRoomColor();
-                int roomCode = topRoom.getCode();
-                
-                if(newcolor.equals(roomColor) && newcode == roomCode){
-                    roomStack.pop();
-                    setRoom(roomColor);
-                    
-                    if(roomStack.empty() == true){
-//                        winGame();
-                          System.out.println("You won!");
+                if(isRoomOption(newcolor) == true){
+                    outputArea.setText("Pop returning to " + newcolor);
+                    int newcode = Integer.parseInt(codeField.getText());
+
+                    //room variable - top of stack to compare to inputs
+                    Room topRoom = roomStack.peek();
+                    String roomColor = topRoom.getRoomColor();
+                    int roomCode = topRoom.getCode();
+
+                    if(newcolor.equals(roomColor) && newcode == roomCode){
+                        roomStack.pop();
+                        setRoom(roomColor);
+
+                        if(roomStack.empty() == true){
+                            wonGame();
+                            System.out.println("You won!");
+                        }
+                    } else{
+                        lostGame();
+                        System.out.println("You lose!");
                     }
                 } else{
-//                    loseGame();
-                      System.out.println("You lose!");
+                    lostGame();
+                    System.out.println("You lose!");
                 }
                 
                 // add code to pop color off the stack, check that the color/code matches and change to that color room
          }
 
          if (e.getSource()== pushButton) {
-                String newcolor = colorField.getText();
-                outputArea.setText("Push entering " + newcolor);
+                String newcolor = colorField.getText().toUpperCase();
+               
                 if(isRoomOption(newcolor) == true){
+                    outputArea.setText("Push entering " + newcolor);
                     currentRoom.setCode(Integer.parseInt(codeField.getText()));
                     roomStack.push(currentRoom);
                     setRoom(newcolor);
+                    
+                } else{
+//                    lostGame();
+                    System.out.println("You lose!");
                 }
                  // add code to push color/code ON the stack and change to that color room
          }
@@ -158,5 +181,13 @@ public void actionPerformed(ActionEvent e) {
          }
 
 }
+
+    public void wonGame(){
+        startGame();
+    }
+    
+    public void lostGame(){
+        startGame();
+    }
 
 }     // End Of Project4
